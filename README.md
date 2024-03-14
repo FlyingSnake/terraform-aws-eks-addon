@@ -1,0 +1,94 @@
+# EKS Addons
+
+AWS EKS Addons Initialization Module
+
+## Usage
+
+```sh
+# You must switch the context to the EKS cluster you want to apply.
+aws eks update-kubeconfig --region $REGION --name $CLUSTER_NAME
+```
+
+```hcl
+module "eks-addon" {
+  source      = "FlyingSnake/eks-addon/aws"
+
+  name_prefix = "TF-"
+
+  tags = {
+    Terraform       = "true"
+  }
+
+  # Change it to your EKS cluster name.
+  eks_cluster_name = "sample-eks-cluster"
+
+  # Set the addon to install to true or false.
+  eks_addons = {
+    aws-load-balancer-controller    = true
+    aws-efs-csi-driver              = true
+    aws-ebs-csi-driver              = true
+    aws-mountpoint-s3-csi-driver    = true
+    snapshot-controller             = true
+    eks-pod-identity-agent          = true
+    amazon-cloudwatch-observability = true
+    aws-distro-for-opentelemetry    = true
+  }
+
+  # Prerequisites for installing aws-distro-for-opentelemetry. If it is already installed, set it to false.
+  cert_manager_install = true
+  otel_kubernetes_rbac_apply = true
+}
+```
+
+## Input
+
+| Name                       | Description                                                                                  | Type   |
+| -------------------------- | -------------------------------------------------------------------------------------------- | ------ |
+| name_prefix                | Pre Name attached to the name of the AWS resource being created                              | string |
+| tags                       | Tags to be attached to created AWS resources                                                 | object |
+| eks_cluster_name           | EKS cluster name where addon will be installed                                               | string |
+| eks_addons                 | EKS Addons to install                                                                        | object |
+| eks_addons_versions        | Addons versions of EKS to be installed                                                       | object |
+| cert_manager_install       | Whether cert-manager is installed(Prerequisites for installing aws-distro-for-opentelemetry) | bool   |
+| cert_manager_version       | Version of certmanager installed                                                             | string |
+| otel_kubernetes_rbac_apply | Whether to apply Kubernetes RBAC to be used in opentelemetry                                 | bool   |
+
+## Output
+
+| Name                                 | Description                                                 | Type         |
+| ------------------------------------ | ----------------------------------------------------------- | ------------ |
+| eks_cluster_name                     | EKS cluster name where addon will be installed              | string       |
+| eks_oidc_id                          | ID of OIDC of EKS cluster                                   | string       |
+| eks_addons_installed                 | Installed EKS Addon                                         | list(string) |
+| aws_load_balancer_controller_role    | ARN of the IAM role used by aws_load_balancer_controller    | string       |
+| aws_efs_csi_driver_role              | ARN of the IAM role used by aws_efs_csi_driver              | string       |
+| aws_ebs_csi_driver_role              | ARN of the IAM role used by aws_ebs_csi_driver              | string       |
+| aws_mountpoint_s3_csi_driver_role    | ARN of the IAM role used by aws_mountpoint_s3_csi_driver    | string       |
+| snapshot_controller_role             | ARN of the IAM role used by snapshot_controller             | string       |
+| amazon_cloudwatch_observability_role | ARN of the IAM role used by amazon_cloudwatch_observability | string       |
+| aws_distro_for_opentelemetry_role    | ARN of the IAM role used by aws_distro_for_opentelemetry    | string       |
+
+## Resources
+
+| Name                                          | Type                           |
+| --------------------------------------------- | ------------------------------ |
+| amazon_cloudwatch_observability               | aws_iam_role                   |
+| amazon_cloudwatch_observability               | aws_eks_addon                  |
+| aws_distro_for_opentelemetry                  | aws_iam_role                   |
+| aws_distro_for_opentelemetry                  | aws_eks_addon                  |
+| kubectl_apply_otel_rbac_yaml                  | null_resource                  |
+| kubectl_apply_certmanager_yaml                | null_resource                  |
+| aws_load_balancer_controller                  | aws_iam_role                   |
+| aws_load_balancer_controller                  | aws_iam_policy                 |
+| aws_load_balancer_controller_attach           | aws_iam_role_policy_attachment |
+| aws_load_balancer_controller                  | helm_release                   |
+| kubectl_apply_aws_load_balancer_controller_sa | null_resource                  |
+| aws_mountpoint_s3_csi_driver                  | aws_iam_role                   |
+| aws_mountpoint_s3_csi_driver                  | aws_eks_addon                  |
+| aws_ebs_csi_driver                            | aws_iam_role                   |
+| aws_ebs_csi_driver                            | aws_eks_addon                  |
+| aws_efs_csi_driver                            | aws_iam_role                   |
+| aws_efs_csi_driver                            | aws_eks_addon                  |
+| eks_pod_identity_agent                        | aws_eks_addon                  |
+| snapshot_controller                           | aws_iam_role                   |
+| snapshot_controller                           | aws_eks_addon                  |
