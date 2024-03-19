@@ -21,9 +21,9 @@ locals {
 
 resource "aws_iam_role" "aws_distro_for_opentelemetry" {
   count               = var.eks_addons["aws-distro-for-opentelemetry"] ? 1 : 0
-  name                = "${var.name_prefix}irsa-eks-addon-adop-${local.oidc_id_substr}"
+  name                = "${var.name_prefix}eks-addon-adop-irsa-${local.oidc_id_substr}"
   assume_role_policy  = local.aws_distro_for_opentelemetry_trust_policy_json
-  tags                = merge({ Name = "${var.name_prefix}irsa-eks-addon-adop-${local.oidc_id_substr}" }, var.tags)
+  tags                = merge({ Name = "${var.name_prefix}eks-addon-adop-irsa-${local.oidc_id_substr}" }, var.tags)
   managed_policy_arns = ["arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy", "arn:aws:iam::aws:policy/AmazonPrometheusRemoteWriteAccess", "arn:aws:iam::aws:policy/AWSXRayDaemonWriteAccess"]
 }
 
@@ -40,7 +40,7 @@ resource "aws_eks_addon" "aws_distro_for_opentelemetry" {
     update = "20m"
   }
 
-  depends_on = [null_resource.kubectl_apply_otel_rbac_yaml, null_resource.kubectl_apply_certmanager_yaml]
+  depends_on = [null_resource.wait_for_3_minutes]
 }
 
 #### Prerequisites for Opentelemetry
@@ -80,4 +80,11 @@ resource "null_resource" "kubectl_apply_certmanager_yaml" {
     command = "kubectl delete -f cert-manager.yaml"
   }
   depends_on = [null_resource.download_certmanager_yaml]
+}
+
+resource "null_resource" "wait_for_3_minutes" {
+  provisioner "local-exec" {
+    command = "sleep 180"
+  }
+  depends_on = [null_resource.kubectl_apply_certmanager_yaml]
 }

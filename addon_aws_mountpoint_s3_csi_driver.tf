@@ -21,9 +21,9 @@ locals {
 
 resource "aws_iam_role" "aws_mountpoint_s3_csi_driver" {
   count              = var.eks_addons["aws-mountpoint-s3-csi-driver"] ? 1 : 0
-  name               = "${var.name_prefix}irsa-eks-addon-s3-csi-driver-${local.oidc_id_substr}"
+  name               = "${var.name_prefix}eks-addon-s3-csi-driver-irsa-${local.oidc_id_substr}"
   assume_role_policy = local.aws_s3_csi_driver_trust_policy_json
-  tags               = merge({ Name = "${var.name_prefix}role-eks-addon-s3-csi-driver-${local.oidc_id_substr}" }, var.tags)
+  tags               = merge({ Name = "${var.name_prefix}eks-addon-s3-csi-driver-irsa-${local.oidc_id_substr}" }, var.tags)
   inline_policy {
     name = "mountpoint_aws_s3_csi_driver_policy"
     policy = jsonencode({

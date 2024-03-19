@@ -21,10 +21,10 @@ locals {
 
 resource "aws_iam_role" "aws_ebs_csi_driver" {
   count               = var.eks_addons["aws-ebs-csi-driver"] ? 1 : 0
-  name                = "${var.name_prefix}irsa-eks-addon-ebs-csi-driver-${local.oidc_id_substr}"
+  name                = "${var.name_prefix}eks-addon-ebs-csi-driver-irsa-${local.oidc_id_substr}"
   assume_role_policy  = local.aws_ebs_csi_driver_trust_policy_json
   managed_policy_arns = ["arn:aws:iam::aws:policy/service-role/AmazonEBSCSIDriverPolicy"]
-  tags                = merge({ Name = "${var.name_prefix}irsa-eks-addon-ebs-csi-driver-${local.oidc_id_substr}" }, var.tags)
+  tags                = merge({ Name = "${var.name_prefix}eks-addon-ebs-csi-driver-irsa-${local.oidc_id_substr}" }, var.tags)
 }
 
 resource "aws_eks_addon" "aws_ebs_csi_driver" {

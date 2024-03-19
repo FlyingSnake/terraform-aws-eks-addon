@@ -21,9 +21,9 @@ locals {
 
 resource "aws_iam_role" "amazon_cloudwatch_observability" {
   count               = var.eks_addons["amazon-cloudwatch-observability"] ? 1 : 0
-  name                = "${var.name_prefix}irsa-eks-addon-cloudwatch-${local.oidc_id_substr}"
+  name                = "${var.name_prefix}eks-addon-cloudwatch-irsa-${local.oidc_id_substr}"
   assume_role_policy  = local.amazon_cloudwatch_observability_trust_policy_json
-  tags                = merge({ Name = "${var.name_prefix}irsa-eks-addon-cloudwatch-${local.oidc_id_substr}" }, var.tags)
+  tags                = merge({ Name = "${var.name_prefix}eks-addon-cloudwatch-irsa-${local.oidc_id_substr}" }, var.tags)
   managed_policy_arns = ["arn:aws:iam::aws:policy/AWSXrayWriteOnlyAccess", "arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy"]
 }
 

@@ -21,10 +21,10 @@ locals {
 
 resource "aws_iam_role" "snapshot_controller" {
   count               = var.eks_addons["snapshot-controller"] ? 1 : 0
-  name                = "${var.name_prefix}irsa-eks-addon-snapshot-controller-${local.oidc_id_substr}"
+  name                = "${var.name_prefix}eks-addon-snapshot-controller-irsa-${local.oidc_id_substr}"
   assume_role_policy  = local.snapshot_controller_trust_policy_json
   managed_policy_arns = ["arn:aws:iam::aws:policy/service-role/AmazonEBSCSIDriverPolicy"]
-  tags                = merge({ Name = "${var.name_prefix}irsa-eks-addon-snapshot-controller-${local.oidc_id_substr}" }, var.tags)
+  tags                = merge({ Name = "${var.name_prefix}eks-addon-snapshot-controller-irsa-${local.oidc_id_substr}" }, var.tags)
 }
 
 resource "aws_eks_addon" "snapshot_controller" {

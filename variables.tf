@@ -18,10 +18,22 @@ variable "eks_cluster_name" {
 
 }
 
-variable "eks_addons" {
-  description = "Addon for install"
+
+variable "helm_addons" {
+  description = "Helm install Addons"
   type = object({
-    aws-load-balancer-controller    = bool
+    aws-load-balancer-controller = bool
+    cluster-autoscaler           = bool
+  })
+  default = {
+    aws-load-balancer-controller = false
+    cluster-autoscaler           = false
+  }
+}
+
+variable "eks_addons" {
+  description = "EKS Addons"
+  type = object({
     aws-efs-csi-driver              = bool
     aws-ebs-csi-driver              = bool
     aws-mountpoint-s3-csi-driver    = bool
@@ -30,6 +42,15 @@ variable "eks_addons" {
     amazon-cloudwatch-observability = bool
     aws-distro-for-opentelemetry    = bool
   })
+  default = {
+    aws-efs-csi-driver              = false
+    aws-ebs-csi-driver              = false
+    aws-mountpoint-s3-csi-driver    = false
+    snapshot-controller             = false
+    eks-pod-identity-agent          = false
+    amazon-cloudwatch-observability = false
+    aws-distro-for-opentelemetry    = false
+  }
 }
 
 variable "eks_addons_versions" {
