@@ -30,3 +30,6 @@ output "aws_efs_csi_driver_role" {
 output "snapshot_controller_role" {
   value = length(aws_iam_role.snapshot_controller) > 0 ? aws_iam_role.snapshot_controller[0].arn : null
 }
+output "cluster_autoscaler_role" {
+  value = length(aws_iam_role.cluster_autoscaler) > 0 ? aws_iam_role.cluster_autoscaler[0].arn : null
+}

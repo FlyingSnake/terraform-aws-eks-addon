@@ -24,7 +24,6 @@ module "eks-addon" {
 
   # Set the addon to install to true or false.
   eks_addons = {
-    aws-load-balancer-controller    = true
     aws-efs-csi-driver              = true
     aws-ebs-csi-driver              = true
     aws-mountpoint-s3-csi-driver    = true
@@ -32,6 +31,11 @@ module "eks-addon" {
     eks-pod-identity-agent          = true
     amazon-cloudwatch-observability = true
     aws-distro-for-opentelemetry    = true
+  }
+
+  helm_addons = {
+    aws-load-balancer-controller = true
+    cluster-autoscaler           = true
   }
 
   # Prerequisites for installing aws-distro-for-opentelemetry. If it is already installed, set it to false.
@@ -49,6 +53,7 @@ module "eks-addon" {
 | eks_cluster_name           | EKS cluster name where addon will be installed                                               | string |
 | eks_addons                 | EKS Addons to install                                                                        | object |
 | eks_addons_versions        | Addons versions of EKS to be installed                                                       | object |
+| helm_addons                | Helm Addons to install                                                                       | object |
 | cert_manager_install       | Whether cert-manager is installed(Prerequisites for installing aws-distro-for-opentelemetry) | bool   |
 | cert_manager_version       | Version of certmanager installed                                                             | string |
 | otel_kubernetes_rbac_apply | Whether to apply Kubernetes RBAC to be used in opentelemetry                                 | bool   |
@@ -67,6 +72,7 @@ module "eks-addon" {
 | snapshot_controller_role             | ARN of the IAM role used by snapshot_controller             | string       |
 | amazon_cloudwatch_observability_role | ARN of the IAM role used by amazon_cloudwatch_observability | string       |
 | aws_distro_for_opentelemetry_role    | ARN of the IAM role used by aws_distro_for_opentelemetry    | string       |
+| cluster_autoscaler_role              | ARN of the IAM role used by cluster_autoscaler              | string       |
 
 ## Resources
 
@@ -92,3 +98,5 @@ module "eks-addon" {
 | eks_pod_identity_agent                        | aws_eks_addon                  |
 | snapshot_controller                           | aws_iam_role                   |
 | snapshot_controller                           | aws_eks_addon                  |
+| cluster_autoscaler                            | aws_iam_role                   |
+| cluster_autoscaler                            | helm_release                   |
