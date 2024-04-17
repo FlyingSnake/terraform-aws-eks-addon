@@ -26,12 +26,12 @@ module "eks-addon" {
     eks-pod-identity-agent          = true
     amazon-cloudwatch-observability = true
     aws-distro-for-opentelemetry    = true
-    appmesh-controller              = true
   }
 
   helm_addons = {
     aws-load-balancer-controller = true
     cluster-autoscaler           = true
+    appmesh-controller           = true
   }
 
   # Prerequisites for installing aws-distro-for-opentelemetry. If it is already installed, set it to false.
