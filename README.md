@@ -4,11 +4,6 @@ AWS EKS Addons Initialization Module
 
 ## Usage
 
-```sh
-# You must switch the context to the EKS cluster you want to apply.
-aws eks update-kubeconfig --region $REGION --name $CLUSTER_NAME
-```
-
 ```hcl
 module "eks-addon" {
   source      = "FlyingSnake/eks-addon/aws"
@@ -31,6 +26,7 @@ module "eks-addon" {
     eks-pod-identity-agent          = true
     amazon-cloudwatch-observability = true
     aws-distro-for-opentelemetry    = true
+    appmesh-controller              = true
   }
 
   helm_addons = {
@@ -57,6 +53,7 @@ module "eks-addon" {
 | cert_manager_install       | Whether cert-manager is installed(Prerequisites for installing aws-distro-for-opentelemetry) | bool   |
 | cert_manager_version       | Version of certmanager installed                                                             | string |
 | otel_kubernetes_rbac_apply | Whether to apply Kubernetes RBAC to be used in opentelemetry                                 | bool   |
+| app_mesh_controller_config | App Mesh Controller (Helm addon) configuration                                               | object |
 
 ## Output
 
@@ -73,6 +70,8 @@ module "eks-addon" {
 | amazon_cloudwatch_observability_role | ARN of the IAM role used by amazon_cloudwatch_observability | string       |
 | aws_distro_for_opentelemetry_role    | ARN of the IAM role used by aws_distro_for_opentelemetry    | string       |
 | cluster_autoscaler_role              | ARN of the IAM role used by cluster_autoscaler              | string       |
+| appmesh_controller_role              | ARN of the IAM role used by appmesh_controller              | string       |
+| appmesh_envoy_role                   | ARN of the IAM role used by appmesh_envoy                   | string       |
 
 ## Resources
 
@@ -100,3 +99,10 @@ module "eks-addon" {
 | snapshot_controller                           | aws_eks_addon                  |
 | cluster_autoscaler                            | aws_iam_role                   |
 | cluster_autoscaler                            | helm_release                   |
+| appmesh_controller                            | aws_iam_role                   |
+| appmesh_controller                            | aws_iam_policy                 |
+| appmesh_controller_attach                     | aws_iam_role_policy_attachment |
+| appmesh_envoy                                 | aws_iam_role                   |
+| appmesh_envoy                                 | aws_iam_policy                 |
+| appmesh_envoy_attach                          | aws_iam_role_policy_attachment |
+| appmesh_controller                            | helm_release                   |

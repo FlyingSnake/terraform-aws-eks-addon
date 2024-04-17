@@ -1,5 +1,9 @@
-locals {
-  aws_efs_csi_driver_trust_policy_json = jsonencode({
+resource "aws_iam_role" "aws_efs_csi_driver" {
+  count               = var.eks_addons["aws-efs-csi-driver"] ? 1 : 0
+  name                = "${var.name_prefix}eks-addon-efs-csi-driver-irsa"
+  managed_policy_arns = ["arn:aws:iam::aws:policy/service-role/AmazonEFSCSIDriverPolicy"]
+  tags                = merge({ Name = "${var.name_prefix}eks-addon-efs-csi-driver-irsa-${local.oidc_id_substr}" }, var.tags)
+  assume_role_policy = jsonencode({
     "Version" : "2012-10-17",
     "Statement" : [
       {
@@ -19,19 +23,10 @@ locals {
   })
 }
 
-resource "aws_iam_role" "aws_efs_csi_driver" {
-  count               = var.eks_addons["aws-efs-csi-driver"] ? 1 : 0
-  name                = "${var.name_prefix}eks-addon-efs-csi-driver-irsa"
-  assume_role_policy  = local.aws_efs_csi_driver_trust_policy_json
-  managed_policy_arns = ["arn:aws:iam::aws:policy/service-role/AmazonEFSCSIDriverPolicy"]
-  tags                = merge({ Name = "${var.name_prefix}eks-addon-efs-csi-driver-irsa" }, var.tags)
-}
-
 resource "aws_eks_addon" "aws_efs_csi_driver" {
   count                    = var.eks_addons["aws-efs-csi-driver"] ? 1 : 0
   cluster_name             = data.aws_eks_cluster.eks_cluster.name
   addon_name               = "aws-efs-csi-driver"
-  addon_version            = var.eks_addons_versions["aws-efs-csi-driver"]
   service_account_role_arn = aws_iam_role.aws_efs_csi_driver[0].arn
   tags                     = merge({ Name = "${var.name_prefix}aws-efs-csi-driver" }, var.tags)
 }

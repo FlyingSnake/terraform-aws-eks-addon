@@ -33,3 +33,9 @@ output "snapshot_controller_role" {
 output "cluster_autoscaler_role" {
   value = length(aws_iam_role.cluster_autoscaler) > 0 ? aws_iam_role.cluster_autoscaler[0].arn : null
 }
+output "appmesh_controller_role" {
+  value = length(aws_iam_role.cluster_autoscaler) > 0 ? aws_iam_role.appmesh_controller[0].arn : null
+}
+output "appmesh_envoy_role" {
+  value = length(aws_iam_role.appmesh_envoy) > 0 ? aws_iam_role.appmesh_envoy[0].arn : null
+}

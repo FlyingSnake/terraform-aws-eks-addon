@@ -1,29 +1,7 @@
-locals {
-  aws_cluster_autoscaler_trust_policy_json = jsonencode({
-    "Version" : "2012-10-17",
-    "Statement" : [
-      {
-        "Effect" : "Allow",
-        "Principal" : {
-          "Federated" : "arn:aws:iam::${data.aws_caller_identity.current.account_id}:oidc-provider/oidc.eks.${data.aws_region.current.id}.amazonaws.com/id/${local.oidc_id}"
-        },
-        "Action" : "sts:AssumeRoleWithWebIdentity",
-        "Condition" : {
-          "StringLike" : {
-            "oidc.eks.${data.aws_region.current.id}.amazonaws.com/id/${local.oidc_id}:sub" : "system:serviceaccount:kube-system:aws-cluster-autoscaler",
-            "oidc.eks.${data.aws_region.current.id}.amazonaws.com/id/${local.oidc_id}:aud" : "sts.amazonaws.com"
-          }
-        }
-      }
-    ]
-  })
-}
-
 resource "aws_iam_role" "cluster_autoscaler" {
-  count              = var.helm_addons["cluster-autoscaler"] ? 1 : 0
-  name               = "${var.name_prefix}eks-addon-ca-irsa-${local.oidc_id_substr}"
-  assume_role_policy = local.aws_cluster_autoscaler_trust_policy_json
-  tags               = merge({ Name = "${var.name_prefix}eks-addon-ca-irsa-${local.oidc_id_substr}" }, var.tags)
+  count = var.helm_addons["cluster-autoscaler"] ? 1 : 0
+  name  = "${var.name_prefix}eks-addon-ca-irsa-${local.oidc_id_substr}"
+  tags  = merge({ Name = "${var.name_prefix}eks-addon-ca-irsa-${local.oidc_id_substr}" }, var.tags)
   inline_policy {
     name = "eks-autoscaling-policy"
     policy = jsonencode({
@@ -60,6 +38,24 @@ resource "aws_iam_role" "cluster_autoscaler" {
       ]
     })
   }
+  assume_role_policy = jsonencode({
+    "Version" : "2012-10-17",
+    "Statement" : [
+      {
+        "Effect" : "Allow",
+        "Principal" : {
+          "Federated" : "arn:aws:iam::${data.aws_caller_identity.current.account_id}:oidc-provider/oidc.eks.${data.aws_region.current.id}.amazonaws.com/id/${local.oidc_id}"
+        },
+        "Action" : "sts:AssumeRoleWithWebIdentity",
+        "Condition" : {
+          "StringLike" : {
+            "oidc.eks.${data.aws_region.current.id}.amazonaws.com/id/${local.oidc_id}:sub" : "system:serviceaccount:kube-system:aws-cluster-autoscaler",
+            "oidc.eks.${data.aws_region.current.id}.amazonaws.com/id/${local.oidc_id}:aud" : "sts.amazonaws.com"
+          }
+        }
+      }
+    ]
+  })
 }
 
 
