@@ -38,6 +38,19 @@ module "eks-addon" {
   # Prerequisites for installing aws-distro-for-opentelemetry. If it is already installed, set it to false.
   cert_manager_install = true
   otel_kubernetes_rbac_apply = true
+
+  # Argocd config
+  argocd = {
+    ha = false
+    ingress = {
+      enabled = true
+      hostname = "argocd.example.com"
+      alb_group_name = "alb-argocd"
+      alb_name = "alb-argocd"
+      alb_subnet_ids = ["subnet-xxx", "subnet-xxx"]
+      alb_scheme = "internal"
+    }
+  }
 }
 ```
 
