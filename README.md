@@ -32,6 +32,7 @@ module "eks-addon" {
     aws-load-balancer-controller = true
     cluster-autoscaler           = true
     appmesh-controller           = true
+    argocd                       = true
   }
 
   # Prerequisites for installing aws-distro-for-opentelemetry. If it is already installed, set it to false.
@@ -54,6 +55,7 @@ module "eks-addon" {
 | cert_manager_version       | Version of certmanager installed                                                             | string |
 | otel_kubernetes_rbac_apply | Whether to apply Kubernetes RBAC to be used in opentelemetry                                 | bool   |
 | app_mesh_controller_config | App Mesh Controller (Helm addon) configuration                                               | object |
+| argocd                     | ArgoCD (Helm addon) configuration                                                            | object |
 
 ## Output
 
@@ -106,3 +108,4 @@ module "eks-addon" {
 | appmesh_envoy                                 | aws_iam_policy                 |
 | appmesh_envoy_attach                          | aws_iam_role_policy_attachment |
 | appmesh_controller                            | helm_release                   |
+| argocd                                        | helm_release                   |

@@ -24,11 +24,13 @@ variable "helm_addons" {
     aws-load-balancer-controller = bool
     cluster-autoscaler           = bool
     appmesh-controller           = bool
+    argocd                       = bool
   })
   default = {
     aws-load-balancer-controller = false
     cluster-autoscaler           = false
     appmesh-controller           = false
+    argocd                       = false
   }
 }
 
@@ -92,6 +94,32 @@ variable "app_mesh_controller_config" {
     xray = {
       imageRepository = "public.ecr.aws/xray/aws-xray-daemon"
       imageTag        = "latest"
+    }
+  }
+}
+
+
+variable "argocd" {
+  type = object({
+    ha = bool
+    ingress = object({
+      enabled        = bool
+      hostname       = string
+      alb_group_name = string
+      alb_name       = string
+      alb_subnet_ids = list(string)
+      alb_scheme     = string
+    })
+  })
+  default = {
+    ha = false
+    ingress = {
+      enabled        = true
+      hostname       = "argocd.example.com"
+      alb_group_name = "alb-argocd"
+      alb_name       = "alb-argocd"
+      alb_subnet_ids = []
+      alb_scheme     = "internal"
     }
   }
 }

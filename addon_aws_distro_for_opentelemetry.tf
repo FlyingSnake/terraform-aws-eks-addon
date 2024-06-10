@@ -1,7 +1,7 @@
 resource "aws_iam_role" "aws_distro_for_opentelemetry" {
   count               = var.eks_addons["aws-distro-for-opentelemetry"] ? 1 : 0
-  name                = "${var.name_prefix}eks-addon-adop-irsa-${local.oidc_id_substr}"
-  tags                = merge({ Name = "${var.name_prefix}eks-addon-adop-irsa-${local.oidc_id_substr}" }, var.tags)
+  name                = "${var.name_prefix}eks-addon-adot-irsa-${local.oidc_id_substr}"
+  tags                = merge({ Name = "${var.name_prefix}eks-addon-adot-irsa-${local.oidc_id_substr}" }, var.tags)
   managed_policy_arns = ["arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy", "arn:aws:iam::aws:policy/AmazonPrometheusRemoteWriteAccess", "arn:aws:iam::aws:policy/AWSXRayDaemonWriteAccess"]
   assume_role_policy = jsonencode({
     "Version" : "2012-10-17",
@@ -32,7 +32,7 @@ resource "aws_eks_addon" "aws_distro_for_opentelemetry" {
   timeouts {
     create = "2m"
   }
-  depends_on = [null_resource.wait_for_3_minutes]
+  depends_on = [null_resource.wait_for_certmanager_install]
 }
 
 #### Prerequisites for Opentelemetry
@@ -41,11 +41,9 @@ resource "null_resource" "kubectl_apply_otel_rbac_yaml" {
   triggers = {
     always_run = "${timestamp()}"
   }
-
   provisioner "local-exec" {
     command = "kubectl apply -f https://amazon-eks.s3.amazonaws.com/docs/addons-otel-permissions.yaml"
   }
-
   provisioner "local-exec" {
     when    = destroy
     command = "kubectl delete -f https://amazon-eks.s3.amazonaws.com/docs/addons-otel-permissions.yaml"
@@ -60,17 +58,16 @@ resource "null_resource" "download_certmanager_yaml" {
 
 resource "null_resource" "kubectl_apply_certmanager_yaml" {
   count = var.cert_manager_install ? 1 : 0
-
   provisioner "local-exec" {
     command = "kubectl apply -f cert-manager.yaml"
   }
-
   depends_on = [null_resource.download_certmanager_yaml]
 }
 
-resource "null_resource" "wait_for_3_minutes" {
+resource "null_resource" "wait_for_certmanager_install" {
+  count = var.cert_manager_install ? 1 : 0
   provisioner "local-exec" {
-    command = "sleep 200"
+    command = "sleep 30"
   }
   depends_on = [null_resource.kubectl_apply_certmanager_yaml]
 }
