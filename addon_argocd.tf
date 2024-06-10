@@ -1,5 +1,5 @@
 resource "helm_release" "argocd" {
-  count            = var.helm_addons.argocd
+  count            = var.helm_addons.argocd ? 1 : 0
   name             = "argocd"
   repository       = "https://argoproj.github.io/argo-helm"
   chart            = "argo-cd"
