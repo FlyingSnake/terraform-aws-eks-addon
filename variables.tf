@@ -25,12 +25,14 @@ variable "helm_addons" {
     cluster-autoscaler           = bool
     appmesh-controller           = bool
     argocd                       = bool
+    cert-manager                 = bool
   })
   default = {
     aws-load-balancer-controller = false
     cluster-autoscaler           = false
     appmesh-controller           = false
     argocd                       = false
+    cert-manager                 = false
   }
 }
 
@@ -55,21 +57,6 @@ variable "eks_addons" {
     aws-distro-for-opentelemetry    = false
   }
 }
-
-#### Prerequisites for aws distro-for-opentelemetry
-variable "cert_manager_install" {
-  type = bool
-}
-variable "cert_manager_version" {
-  type    = string
-  default = "v1.8.2"
-}
-variable "otel_kubernetes_rbac_apply" {
-  description = "kubernetes RBAC for otel (https://amazon-eks.s3.amazonaws.com/docs/addons-otel-permissions.yaml)"
-  type        = bool
-}
-
-
 
 #### App Mesh Controller config
 variable "app_mesh_controller_config" {

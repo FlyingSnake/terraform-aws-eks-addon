@@ -33,6 +33,7 @@ module "eks-addon" {
     cluster-autoscaler           = true
     appmesh-controller           = true
     argocd                       = true
+    cert-manager                 = false
   }
 
   # Prerequisites for installing aws-distro-for-opentelemetry. If it is already installed, set it to false.
@@ -122,3 +123,4 @@ module "eks-addon" {
 | appmesh_envoy_attach                          | aws_iam_role_policy_attachment |
 | appmesh_controller                            | helm_release                   |
 | argocd                                        | helm_release                   |
+| cert_manager                                  | helm_release                   |
